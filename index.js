@@ -45,7 +45,67 @@ function paintToCanvas() {
 	// return interval in case I need to clear it later
 	return setInterval(() => {
 		ctx.drawImage(video, 0, 0, width, height);
+
+		// take the pixels out
+		let pixels = ctx.getImageData(0, 0, width, height);
+		
+		// mess with their RGB values
+		// pixels = redEffect(pixels);
+		// pixels = rgbSplit(pixels);
+		// pixels = greenScreen(pixels);
+		
+		// put the updated pixels back
+		ctx.putImageData(pixels, 0, 0);
 	}, 16);
+}
+
+////////////////// Filters //////////////////
+
+// The values inside these filter functions are random ones I think look good
+function redEffect(pixels) {
+	for (let i = 0; i < pixels.data.length; i += 4) {
+		pixels.data[i + 0] = pixels.data[i + 0] + 100 // R 
+		pixels.data[i + 1] = pixels.data[i + 1] - 50 // G
+		pixels.data[i + 2] = pixels.data[i + 2] * 0.5 // B
+		// not gonna mess with alpha, just remmeber thats why += 4
+		// pixels.data[i + 3] // A
+	}
+	return pixels;
+}
+
+function rgbSplit(pixels) {
+	for (let i = 0; i < pixels.data.length; i += 4) {
+		pixels.data[i - 150] = pixels.data[i + 0] // R 
+		pixels.data[i + 200] = pixels.data[i + 1] // G
+		pixels.data[i - 150] = pixels.data[i + 2] // B
+	}
+	return pixels;
+}
+
+function greenScreen(pixels) {
+	const levels = {};
+
+	document.querySelectorAll('.rgb input').forEach((input) => {
+		levels[input.name] = input.value;
+	});
+
+	for (i = 0; i < pixels.data.length; i += 4) {
+		const red = pixels.data[i + 0];
+		const green = pixels.data[i + 1];
+		const blue = pixels.data[i + 2];
+		const alpha = pixels.data[i + 3];
+
+		if (red >= levels.rmin
+		&& green >= levels.gmin
+		&& blue >= levels.bmin
+		&& red <= levels.rmax
+		&& green <= levels.gmax
+		&& blue <= levels.bmax) {
+			// set 4th pixel (i.e. Alpha) to totally transparent
+			pixels.data[i + 3] = 0;
+		}
+	}
+	return pixels;
 }
 
 getVideo();
