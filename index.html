@@ -9,8 +9,13 @@
 
   <div class="photobooth">
     <div class="controls">
-      <button id="take-photo">Take Photo</button>
-      <div class="rgb">
+      <button class="take-photo">Take Photo</button>
+      <div class="filters">
+        <button class="filter-button" data-filter="redEffect">Red Filter</button>
+        <button class="filter-button" data-filter="rgbSplit">Multi Color Haze Filter</button>
+        <button class="filter-button" data-filter="noFilters">Clear Filters</button>
+      </div>
+      <!-- <div class="rgb">
         <label for="rmin">Red Min:</label>
         <input type="range" min=0 max=255 name="rmin">
         <label for="rmax">Red Max:</label>
@@ -29,7 +34,7 @@
         <input type="range" min=0 max=255 name="bmin">
         <label for="bmax">Blue Max:</label>
         <input type="range" min=0 max=255 name="bmax">
-      </div>
+      </div> -->
     </div>
 
     <canvas class="photo"></canvas>

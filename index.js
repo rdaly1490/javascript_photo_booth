@@ -3,8 +3,10 @@ const canvas = document.querySelector('.photo');
 const ctx = canvas.getContext('2d');
 const strip = document.querySelector('.strip');
 const snap = document.querySelector('.snap');
-const takePhotoButton = document.querySelector('#take-photo');
+const filterButtons = document.querySelectorAll('.filter-button')
+const takePhotoButton = document.querySelector('.take-photo');
 let photosTaken = 0;
+let currentFilter = 'noFilters';
 
 function takePhoto() {
 	// play camera click sound
@@ -50,18 +52,23 @@ function paintToCanvas() {
 		let pixels = ctx.getImageData(0, 0, width, height);
 		
 		// mess with their RGB values
-		// pixels = redEffect(pixels);
-		// pixels = rgbSplit(pixels);
-		// pixels = greenScreen(pixels);
-		
+		if (currentFilter !== 'noFilters') {
+			const currentFilterFn = window[currentFilter];
+			pixels = currentFilterFn(pixels);
+		}
+
 		// put the updated pixels back
 		ctx.putImageData(pixels, 0, 0);
 	}, 16);
 }
 
-////////////////// Filters //////////////////
+function updateFilterType() {
+	currentFilter = this.dataset.filter
+}
 
-// The values inside these filter functions are random ones I think look good
+////////////////// Filters //////////////////
+// The values inside redEffect & rgbSplit are random ones I think look good
+
 function redEffect(pixels) {
 	for (let i = 0; i < pixels.data.length; i += 4) {
 		pixels.data[i + 0] = pixels.data[i + 0] + 100 // R 
@@ -110,5 +117,7 @@ function greenScreen(pixels) {
 
 getVideo();
 
-takePhotoButton.addEventListener('click', takePhoto);
 video.addEventListener('canplay', paintToCanvas);
+takePhotoButton.addEventListener('click', takePhoto);
+filterButtons.forEach(button => button.addEventListener('click', updateFilterType));
+
